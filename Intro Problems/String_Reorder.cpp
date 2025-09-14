@@ -1,53 +1,78 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <queue>
+#include <algorithm>
+#include <utility>
+#include <cassert>
 using namespace std;
-
-int main() {
+void solve() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
     string s;
     cin >> s;
-    int n = s.size();
-
-    // Count frequency of each character
-    vector<int> freq(26, 0);
-    for(char c : s) freq[c - 'A']++;
-
-    // Check if possible
-    int maxFreq = 0;
-    for (int f : freq) maxFreq = max(maxFreq, f);
-    if (maxFreq > (n + 1) / 2) {
+    int n = s.length();
+    vector<int> counts(26, 0);
+    for (char ch : s) {
+        counts[ch - 'A']++;
+    }
+    int max_freq_initial = 0;
+    for (int count : counts) {
+        max_freq_initial = max(max_freq_initial, count);
+    }
+    if (max_freq_initial > (n + 1) / 2) {
         cout << -1 << endl;
-        return 0;
+        return;
     }
-
-    // Min-heap for lex minimality
-    priority_queue<pair<char, int>, vector<pair<char,int>>, greater<>> pq;
-    for (int i = 0; i < 26; ++i) {
-        if (freq[i]) pq.push({(char)('A'+i), freq[i]});
-    }
-
-    string res = "";
-    pair<char, int> prev = {'#', 0};
-
-    while (!pq.empty()) {
-        auto curr = pq.top(); pq.pop();
-
-        if (!res.empty() && curr.first == res.back()) {
-            if (pq.empty()) {
-                cout << -1 << endl;
-                return 0;
+    string result = "";
+    int last_char_idx = -1; 
+    int rem = n; 
+    for (int i = 0; i < n; ++i) {
+        vector<pair<int, int>> freqs;
+        for (int j = 0; j < 26; ++j) {
+            if (counts[j] > 0) {
+                freqs.push_back({-counts[j], j});
             }
-            auto next = pq.top(); pq.pop();
-
-            res += next.first;
-            if (--next.second > 0) pq.push(next);
-            pq.push(curr);
-        } else {
-            res += curr.first;
-            if (--curr.second > 0) pq.push(curr);
         }
+        sort(freqs.begin(), freqs.end());
+        int max_freq = 0;
+        int M_idx = -1; 
+        int second_max_freq = 0;
+        if (!freqs.empty()) {
+            max_freq = -freqs[0].first;
+            M_idx = freqs[0].second;
+        }
+        if (freqs.size() > 1) {
+            second_max_freq = -freqs[1].first;
+        }
+        int to_place_idx = -1;
+        if ((2 * max_freq > rem) && (M_idx != last_char_idx)) {
+            to_place_idx = M_idx;
+        } else {
+            for (int c = 0; c < 26; ++c) {
+                if (counts[c] > 0 && c != last_char_idx) {
+                    int max_freq_after_c;
+                    if (c == M_idx) {
+                        max_freq_after_c = max(counts[c] - 1, second_max_freq);
+                    } else {
+                        max_freq_after_c = max_freq;
+                    }
+
+                    if (max_freq_after_c <= rem / 2) {
+                        to_place_idx = c;
+                        break; 
+                    }
+                }
+            }
+        }
+        assert(to_place_idx != -1);
+        result += (char)('A' + to_place_idx);
+        counts[to_place_idx]--;
+        last_char_idx = to_place_idx;
+        rem--;
     }
-    cout << res << endl;
+    cout << result << endl;
+}
+int main() {
+    solve();
     return 0;
 }
