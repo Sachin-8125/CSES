@@ -1,42 +1,29 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// Function to solve the problem
-void solve(vector<long long>& arr, long long X, long long N) {
-    vector<vector<long long>> vec(N, vector<long long>(2));
-    for (int i = 0; i < N; i++) {
-        vec[i] = arr[i];
-        vec[i][1] = i + 1;
+int main() {
+    int n;
+    long long x;
+    cin >> n >> x;
+    vector<pair<long long, int>> vec(n);
+    for(int i = 0; i < n; ++i) {
+        cin >> vec[i].first;
+        vec[i].second = i+1; // Store original index (1-based)
     }
+    sort(vec.begin(), vec.end()); // Sort by value
 
-    sort(vec.begin(), vec.end());
-
-    for (long long ptr1 = 0; ptr1 < N - 2; ptr1++) {
-        long long ptr2 = ptr1 + 1;
-        long long ptr3 = N - 1;
-
-        while (ptr2 < ptr3) {
-            long long currentSum = vec[ptr1] + vec[ptr2] + vec[ptr3];
-            if (currentSum == X) {
-                cout << vec[ptr1][1] << " " << vec[ptr2][1] << " " << vec[ptr3][1] << "\n";
-                return;
+    for(int i = 0; i < n-2; ++i) {
+        int l = i+1, r = n-1;
+        while(l < r) {
+            long long sum = vec[i].first + vec[l].first + vec[r].first;
+            if(sum == x) {
+                cout << vec[i].second << " " << vec[l].second << " " << vec[r].second << "\n";
+                return 0;
             }
-            else if (currentSum > X) {
-                ptr3--;
-            }
-            else {
-                ptr2++;
-            }
+            else if(sum < x) l++;
+            else r--;
         }
     }
-    cout << "IMPOSSIBLE";
-}
-
-int main() {
-    long long N, X;
-    cin >> N >> X;
-    vector<long long> arr(N);
-    for (int i = 0; i < N; i++) cin >> arr[i];
-    solve(arr, X, N);
+    cout << "IMPOSSIBLE\n";
     return 0;
 }
