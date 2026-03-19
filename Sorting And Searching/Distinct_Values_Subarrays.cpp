@@ -6,17 +6,17 @@ int main() {
     cin.tie(NULL);
     int n;
     cin >> n;
-    vector<int> arr(n);
+    vector<long long> arr(n);
     for (int i = 0; i < n; i++) {
         cin >> arr[i];
     }
     long long result = 0;
-    unordered_map<int, int> freq;
+    map<long long, int> freq;  // Use ordered map instead
     int left = 0;
     
     for (int right = 0; right < n; right++) {
         freq[arr[right]]++;
-        while (freq[arr[right]] > 1) {
+        while (static_cast<int>(freq.size()) < (right - left + 1)) {  // Check if window has duplicates
             freq[arr[left]]--;
             if (freq[arr[left]] == 0) {
                 freq.erase(arr[left]);
