@@ -7,19 +7,19 @@ using namespace std;
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-
+    
     int n;
     if (!(cin >> n)) return 0;
-
+    
     vector<int> p(n + 1);
     for (int i = 1; i <= n; i++) {
         cin >> p[i];
     }
-
+    
     vector<vector<int>> cycles;
     vector<bool> vis(n + 1, false);
     bool needs_two_rounds = false;
-
+    
     for (int i = 1; i <= n; i++) {
         if (!vis[i]) {
             vector<int> cycle;
@@ -37,12 +37,12 @@ int main() {
             }
         }
     }
-
+    
     if (cycles.empty()) {
         cout << 0 << "\n";
         return 0;
     }
-
+    
     if (!needs_two_rounds) {
         cout << 1 << "\n";
         cout << cycles.size() << "\n";
@@ -51,7 +51,7 @@ int main() {
         }
         return 0;
     }
-
+    
     vector<pair<int, int>> round1;
     
     for (auto& cycle : cycles) {
@@ -65,7 +65,7 @@ int main() {
             r--;
         }
     }
-
+    
     vector<pair<int, int>> round2;
     fill(vis.begin(), vis.end(), false);
     
@@ -83,7 +83,7 @@ int main() {
             }
         }
     }
-
+    
     cout << 2 << "\n";
     cout << round1.size() << "\n";
     for (const auto& pair : round1) {
